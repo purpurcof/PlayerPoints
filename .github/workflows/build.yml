@@ -41,7 +41,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: success()
       with:
-        name: PlayerPoints-${{ github.ref_name }}-${{ github.run_number }}
+        name: PlayerPoints-${{ github.run_number }}
         path: build/libs/*.jar
         retention-days: 30
         
