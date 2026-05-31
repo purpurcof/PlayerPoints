@@ -49,6 +49,7 @@ command-giveall-success: '&aGave &b%amount% &a%currency% à tous les joueurs en 
 # Take Command
 command-take-description: 'Prenez des points d''un joueur'
 command-take-success: '&aA pris &b%amount% &a%currency% de &b%player%&a.'
+command-take-taken: ''
 command-take-not-enough: '&b%player% &cn''a pas assez %currency% pour cela.'
 
 # Look Command

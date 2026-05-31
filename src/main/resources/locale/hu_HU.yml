@@ -49,6 +49,7 @@ command-giveall-success: '&aAdtál &b%amount% &a%currency%ot az összes elérhet
 # Take Command
 command-take-description: 'Elvesz pontot a játékostól'
 command-take-success: '&aElvettél &b%amount% &a%currency%ot &b%player% &ajátékostól.'
+command-take-taken: ''
 command-take-not-enough: '&b%player%-nak/nek &cnincs elég %currency%ja ehhez.'
 
 # Look Command

@@ -38,16 +38,19 @@ public class GiveCommand extends BasePointsCommand {
             }
 
             if (this.api.give(player.getFirst(), PointsUtils.getSenderUUID(sender), amount) && silentFlag == null) {
+                int balance = this.api.look(player.getFirst());
                 // Send message to receiver
                 Player onlinePlayer = Bukkit.getPlayer(player.getFirst());
                 if (onlinePlayer != null) {
                     this.localeManager.sendCommandMessage(onlinePlayer, "command-give-received", StringPlaceholders.builder("amount", PointsUtils.formatPoints(amount))
+                            .add("balance", PointsUtils.formatPoints(balance))
                             .add("currency", this.localeManager.getCurrencyName(amount))
                             .build());
                 }
 
                 // Send message to sender
                 this.localeManager.sendCommandMessage(sender, "command-give-success", StringPlaceholders.builder("amount", PointsUtils.formatPoints(amount))
+                        .add("balance", PointsUtils.formatPoints(balance))
                         .add("currency", this.localeManager.getCurrencyName(amount))
                         .add("player", player.getSecond())
                         .build());

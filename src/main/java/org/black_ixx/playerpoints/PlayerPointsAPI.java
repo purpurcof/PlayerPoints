@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.black_ixx.playerpoints.event.PlayerPointsChangeEvent;
 import org.black_ixx.playerpoints.event.PlayerPointsResetEvent;
 import org.black_ixx.playerpoints.manager.DataManager;
+import org.black_ixx.playerpoints.manager.LocaleManager;
 import org.black_ixx.playerpoints.models.SortedPlayer;
 import org.black_ixx.playerpoints.models.TransactionType;
 import org.black_ixx.playerpoints.util.PointsUtils;
@@ -26,6 +27,30 @@ public class PlayerPointsAPI {
 
     public PlayerPointsAPI(PlayerPoints plugin) {
         this.plugin = plugin;
+    }
+
+    /**
+     * Gets the name of the currency based on the amount of points.
+     *
+     * @param points The amount of points being represented
+     * @return The name of the currency
+     */
+    public String getCurrencyName(int points) {
+        return this.plugin.getManager(LocaleManager.class).getCurrencyName(points);
+    }
+
+    /**
+     * @return The name of the currency when singular
+     */
+    public String getCurrencyNameSingular() {
+        return this.plugin.getManager(LocaleManager.class).getCurrencyName(1);
+    }
+
+    /**
+     * @return The name of the currency when plural
+     */
+    public String getCurrencyNamePlural() {
+        return this.plugin.getManager(LocaleManager.class).getCurrencyName(2);
     }
 
     /**

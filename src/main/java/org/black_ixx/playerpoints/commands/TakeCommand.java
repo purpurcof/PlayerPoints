@@ -9,7 +9,9 @@ import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import org.black_ixx.playerpoints.PlayerPoints;
 import org.black_ixx.playerpoints.commands.arguments.StringSuggestingArgumentHandler;
 import org.black_ixx.playerpoints.util.PointsUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class TakeCommand extends BasePointsCommand {
 
@@ -37,10 +39,22 @@ public class TakeCommand extends BasePointsCommand {
 
             // Try to take points from the player
             if (this.api.take(player.getFirst(), PointsUtils.getSenderUUID(sender), amount) && silentFlag == null) {
+                // Send success to taker
                 this.localeManager.sendCommandMessage(sender, "command-take-success", StringPlaceholders.builder("player", player.getSecond())
+                        .add("balance", PointsUtils.formatPoints(this.api.look(player.getFirst())))
                         .add("currency", this.localeManager.getCurrencyName(amount))
                         .add("amount", PointsUtils.formatPoints(amount))
                         .build());
+
+                Player onlinePlayer = Bukkit.getPlayer(player.getFirst());
+                if (onlinePlayer != null) {
+                    // Send success to player
+                    this.localeManager.sendCommandMessage(onlinePlayer, "command-take-taken", StringPlaceholders.builder("player", player.getSecond())
+                            .add("balance", PointsUtils.formatPoints(this.api.look(player.getFirst())))
+                            .add("currency", this.localeManager.getCurrencyName(amount))
+                            .add("amount", PointsUtils.formatPoints(amount))
+                            .build());
+                }
             } else if (silentFlag == null) {
                 this.localeManager.sendCommandMessage(sender, "command-take-not-enough", StringPlaceholders.builder("player", player.getSecond())
                         .add("currency", this.localeManager.getCurrencyName(amount))

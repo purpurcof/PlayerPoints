@@ -49,6 +49,7 @@ command-giveall-success: '&a已成功给予 &b%amount% &a%currency% 给所有在
 # 拿去命令
 command-take-description: '从玩家那取走点劵'
 command-take-success: '&a成功从玩家 &b%player% 那拿走 &b%amount% &a%currency% 。'
+command-take-taken: ''
 command-take-not-enough: '&b%player% &c没有足够的点劵 %currency% 来被拿走。'
 
 # 查看命令

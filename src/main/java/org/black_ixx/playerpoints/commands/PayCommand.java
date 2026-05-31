@@ -66,6 +66,7 @@ public class PayCommand extends BasePointsCommand {
             if (this.api.pay(player.getUniqueId(), target.getFirst(), amount)) {
                 // Send success message to sender
                 this.localeManager.sendCommandMessage(player, "command-pay-sent", StringPlaceholders.builder("amount", PointsUtils.formatPoints(amount))
+                        .add("balance", PointsUtils.formatPoints(this.api.look(player.getUniqueId())))
                         .add("currency", this.localeManager.getCurrencyName(amount))
                         .add("player", target.getSecond())
                         .build());
@@ -74,6 +75,7 @@ public class PayCommand extends BasePointsCommand {
                 Player onlinePlayer = Bukkit.getPlayer(target.getFirst());
                 if (onlinePlayer != null) {
                     this.localeManager.sendCommandMessage(onlinePlayer, "command-pay-received", StringPlaceholders.builder("amount", PointsUtils.formatPoints(amount))
+                            .add("balance", PointsUtils.formatPoints(this.api.look(onlinePlayer.getUniqueId())))
                             .add("currency", this.localeManager.getCurrencyName(amount))
                             .add("player", player.getName())
                             .build());

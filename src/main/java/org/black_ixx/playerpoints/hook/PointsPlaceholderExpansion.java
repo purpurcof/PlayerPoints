@@ -1,12 +1,18 @@
 package org.black_ixx.playerpoints.hook;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.black_ixx.playerpoints.PlayerPoints;
 import org.black_ixx.playerpoints.manager.DataManager;
 import org.black_ixx.playerpoints.manager.LeaderboardManager;
 import org.black_ixx.playerpoints.manager.LocaleManager;
 import org.black_ixx.playerpoints.models.SortedPlayer;
+import org.black_ixx.playerpoints.models.Tuple;
 import org.black_ixx.playerpoints.util.PointsUtils;
 import org.bukkit.OfflinePlayer;
 
@@ -17,11 +23,18 @@ public class PointsPlaceholderExpansion extends PlaceholderExpansion {
     private final LeaderboardManager leaderboardManager;
     private final LocaleManager localeManager;
 
+    private final Cache<String, Tuple<UUID, String>> playerCache;
+
     public PointsPlaceholderExpansion(PlayerPoints playerPoints) {
         this.playerPoints = playerPoints;
         this.dataManager = playerPoints.getManager(DataManager.class);
         this.leaderboardManager = playerPoints.getManager(LeaderboardManager.class);
         this.localeManager = playerPoints.getManager(LocaleManager.class);
+
+        this.playerCache = CacheBuilder.newBuilder()
+                .expireAfterWrite(30, TimeUnit.MINUTES)
+                .expireAfterAccess(1, TimeUnit.MINUTES)
+                .build();
     }
 
     @Override
@@ -45,6 +58,17 @@ public class PointsPlaceholderExpansion extends PlaceholderExpansion {
                         return null;
                     }
             }
+        }
+
+        if (placeholder.toLowerCase().startsWith("points_for_")) {
+            String suffix = placeholder.substring("points_for_".length());
+            return this.getPointsByName(suffix, String::valueOf);
+        } else if (placeholder.toLowerCase().startsWith("points_formatted_for_")) {
+            String suffix = placeholder.substring("points_formatted_for_".length());
+            return this.getPointsByName(suffix, PointsUtils::formatPoints);
+        } else if (placeholder.toLowerCase().startsWith("points_shorthand_for_")) {
+            String suffix = placeholder.substring("points_shorthand_for_".length());
+            return this.getPointsByName(suffix, PointsUtils::formatPointsShorthand);
         }
 
         if (placeholder.toLowerCase().startsWith("leaderboard_")) {
@@ -86,6 +110,20 @@ public class PointsPlaceholderExpansion extends PlaceholderExpansion {
         }
 
         return null;
+    }
+
+    private String getPointsByName(String username, Function<Integer, String> formatter) {
+        try {
+            Tuple<UUID, String> target = this.playerCache.get(username, () -> {
+                Tuple<UUID, String> byName = PointsUtils.getPlayerByName(username);
+                if (byName == null)
+                    throw new Exception("Player not found");
+                return byName;
+            });
+            return formatter.apply(this.dataManager.getEffectivePoints(target.getFirst()));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override

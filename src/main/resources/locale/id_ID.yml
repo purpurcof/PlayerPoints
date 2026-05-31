@@ -49,6 +49,7 @@ command-giveall-success: '&aMemberikan &b%amount% &a%currency% kepada semua play
 # Take Command
 command-take-description: 'Ambil poin dari pemain'
 command-take-success: '&aMengambil &b%amount% &a%currency% dari &b%player%&a.'
+command-take-taken: ''
 command-take-not-enough: '&b%player% &ctidak memiliki %currency% yang cukup untuk itu.'
 
 # Look Command

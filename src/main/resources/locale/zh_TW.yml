@@ -49,6 +49,7 @@ command-giveall-success: '&a給予所有玩家 &b%amount% &a點&a%currency%.'
 # Take Command
 command-take-description: '&8 - &d/points take  <玩家> <數量> &7- 拿走玩家點數'
 command-take-success: '&a從 &b%player% &a拿走 &b%amount% &a點&a%currency%.'
+command-take-taken: ''
 command-take-not-enough: '&b%player% &c沒有足夠的%currency%.'
 
 # Look Command

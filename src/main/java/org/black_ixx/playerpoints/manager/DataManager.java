@@ -61,7 +61,7 @@ public class DataManager extends AbstractDataManager implements Listener {
     private LoadingCache<UUID, Integer> pointsCache;
     private final Map<UUID, Deque<PendingTransaction>> pendingTransactions;
     private final Map<UUID, String> pendingUsernameUpdates;
-    private final Set<String> accountToNameMap;
+    private final Set<String> allAccountNames;
     private boolean isModernSqlite;
     private boolean logTransactions;
 
@@ -70,7 +70,7 @@ public class DataManager extends AbstractDataManager implements Listener {
 
         this.pendingTransactions = new ConcurrentHashMap<>();
         this.pendingUsernameUpdates = new ConcurrentHashMap<>();
-        this.accountToNameMap = Collections.newSetFromMap(new ConcurrentHashMap<>());
+        this.allAccountNames = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
         Bukkit.getPluginManager().registerEvents(this, rosePlugin);
     }
@@ -133,7 +133,7 @@ public class DataManager extends AbstractDataManager implements Listener {
         this.pointsCache.invalidateAll();
         this.pendingTransactions.clear();
         this.pendingUsernameUpdates.clear();
-        this.accountToNameMap.clear();
+        this.allAccountNames.clear();
 
         super.disable();
     }
@@ -161,25 +161,25 @@ public class DataManager extends AbstractDataManager implements Listener {
     }
 
     private void updateAccountUUIDMaps() {
-        Set<String> accountToNameMap = new HashSet<>();
+        Set<String> allAccountNames = new HashSet<>();
         this.databaseConnector.connect(connection -> {
             String accountUUIDMapQuery = "SELECT username FROM " + this.getTablePrefix() + "username_cache";
             try (Statement statement = connection.createStatement()) {
                 ResultSet result = statement.executeQuery(accountUUIDMapQuery);
                 while (result.next())
-                    accountToNameMap.add(result.getString(1));
+                    allAccountNames.add(result.getString(1));
             }
         });
 
-        this.accountToNameMap.clear();
-        this.accountToNameMap.addAll(accountToNameMap);
+        this.allAccountNames.clear();
+        this.allAccountNames.addAll(allAccountNames);
     }
 
     /**
      * @return a set of all account names registered by PlayerPoints, will be empty if tab-complete-show-all-players is false
      */
     public Set<String> getAllAccountNames() {
-        return this.accountToNameMap;
+        return this.allAccountNames;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -192,7 +192,7 @@ public class DataManager extends AbstractDataManager implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         this.pendingUsernameUpdates.put(player.getUniqueId(), player.getName());
-        this.accountToNameMap.add(player.getName());
+        this.allAccountNames.add(player.getName());
     }
 
     /**
@@ -518,13 +518,15 @@ public class DataManager extends AbstractDataManager implements Listener {
         this.pendingUsernameUpdates.put(uuid, accountName);
         int startingBalance = org.black_ixx.playerpoints.config.SettingKey.STARTING_BALANCE.get();
         this.setPoints(TransactionType.SET, uuid, "Starting balance", null, startingBalance);
-        this.accountToNameMap.add(accountName);
+        this.allAccountNames.add(accountName);
         return uuid;
     }
 
     public void deleteAccount(UUID accountID) {
         this.pointsCache.invalidate(accountID);
         this.pendingTransactions.remove(accountID);
+
+        String username = this.lookupCachedUsername(accountID);
 
         this.databaseConnector.connect(connection -> {
             String usernameDeleteQuery = "DELETE FROM " + this.getPointsTableName() + " WHERE " + this.getUuidColumnName() + " = ?";
@@ -539,7 +541,7 @@ public class DataManager extends AbstractDataManager implements Listener {
             }
         });
 
-        this.accountToNameMap.remove(accountID);
+        this.allAccountNames.remove(username);
     }
 
     public void importData(Map<UUID, Integer> data, Map<UUID, String> cachedUsernames) {

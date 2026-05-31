@@ -47,6 +47,7 @@ command-giveall-success: '&aTrao &b%amount% &a%currency% cho tất cả người
 # Take Command
 command-take-description: 'Lấy points từ người chơi'
 command-take-success: '&aLấy đi &b%amount% &a%currency% từ &b%player%&a.'
+command-take-taken: ''
 command-take-not-enough: '&b%player% &ckhông có đủ %currency% cho điều này.'
 
 # Look Command

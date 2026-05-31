@@ -49,6 +49,7 @@ command-giveall-success: '&a現在ログインしている全プレイヤーに 
 # Take コマンド
 command-take-description: 'プレイヤーからポイントを剥奪する。'
 command-take-success: '&b%player%&a から &b%amount% &a%currency% 剥奪しました。'
+command-take-taken: ''
 command-take-not-enough: '&b%player% &cの所持%currency%が足りないため。'
 
 # Look Command

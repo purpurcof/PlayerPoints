@@ -126,12 +126,14 @@ public final class PointsUtils {
                 return;
             }
 
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
-            if (offlinePlayer.getName() != null && offlinePlayer.hasPlayedBefore()) {
-                Tuple<UUID, String> tuple = new Tuple<>(offlinePlayer.getUniqueId(), offlinePlayer.getName());
-                plugin.getScheduler().runTask(() -> callback.accept(tuple));
-                dataManager.updateCachedUsernames(Collections.singletonMap(tuple.getFirst(), tuple.getSecond()));
-                return;
+            if (!name.startsWith("*")) {
+                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+                if (offlinePlayer.getName() != null && offlinePlayer.hasPlayedBefore()) {
+                    Tuple<UUID, String> tuple = new Tuple<>(offlinePlayer.getUniqueId(), offlinePlayer.getName());
+                    plugin.getScheduler().runTask(() -> callback.accept(tuple));
+                    dataManager.updateCachedUsernames(Collections.singletonMap(tuple.getFirst(), tuple.getSecond()));
+                    return;
+                }
             }
 
             plugin.getScheduler().runTask(() -> callback.accept(null));
@@ -150,9 +152,11 @@ public final class PointsUtils {
         if (player != null)
             return new Tuple<>(player.getUniqueId(), player.getName());
 
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
-        if (offlinePlayer.getName() != null && offlinePlayer.hasPlayedBefore())
-            return new Tuple<>(offlinePlayer.getUniqueId(), offlinePlayer.getName());
+        if (!name.startsWith("*")) {
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+            if (offlinePlayer.getName() != null && offlinePlayer.hasPlayedBefore())
+                return new Tuple<>(offlinePlayer.getUniqueId(), offlinePlayer.getName());
+        }
 
         UUID uuid = PlayerPoints.getInstance().getManager(DataManager.class).lookupCachedUUID(name);
         if (uuid != null)

@@ -31,6 +31,7 @@ public class ResetCommand extends BasePointsCommand {
 
             if (this.api.reset(player.getFirst(), PointsUtils.getSenderUUID(sender))) {
                 this.localeManager.sendCommandMessage(sender, "command-reset-success", StringPlaceholders.builder("player", player.getSecond())
+                        .add("balance", PointsUtils.formatPoints(this.api.look(player.getFirst())))
                         .add("currency", this.localeManager.getCurrencyName(0))
                         .build());
             }
